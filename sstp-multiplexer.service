@@ -1,0 +1,11 @@
+[Unit]
+Description=SSTP-HTTP Multiplexer
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sstpmultipler/SSTPMultiplexer.php
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
