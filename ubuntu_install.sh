@@ -1,6 +1,6 @@
 # Setup system service
 
-DIR=`pwd`$stripped
+DIR=`pwd`
 
 sudo mkdir /usr/local/sstpmultipler
 sudo touch /usr/local/sstpmultipler/SSTPMultiplexer.php
