@@ -70,7 +70,7 @@ Primary location for simple `config.ini` is in `/etc/sstpmultipler/config.ini`, 
 
 - Tested on:
   - SSTP client: Windows 11 23H2
-  - SSTP server: Softether 5.01
+  - SSTP server: [Softether 5.01](https://github.com/SoftEtherVPN/SoftEtherVPN)
   - HTTP client: Firefox 126.0
   - HTTP server: Apache/2.4.59 (Ubuntu 20.04)
   - Multiplexer on: Ubuntu 20.04, PHP 7.4.33
