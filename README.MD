@@ -3,7 +3,7 @@
 ![Intended use](misc/schema.svg)
 
 Tool to serve **HTTPS** and **SSTP** on same port and ip, for unix systems.  
-Simple one file php program, with ready-made install scripts for ubuntu.
+Simple one file php program, with ready-made install scripts for ubuntu. Also, it's kind of reverse proxy, so, use with caution please.  
 > If you are using this tool, I'll be happy when you leave a star, to keep this project alive 😇
 
 ## Installation
