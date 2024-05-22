@@ -11,8 +11,8 @@ PHP=$(which php)
 echo "#!$PHP" | cat - $DIR/SSTPMultiplexer.php > /usr/local/sstpmultipler/SSTPMultiplexer.php
 
 sudo mkdir /usr/local/sstpmultipler/misc
-sudo cp $DIR/misc/example_cert.pem /etc/sstpmultipler/misc/example_cert.pem
-sudo cp $DIR/misc/example_key.pem /etc/sstpmultipler/misc/example_key.pem
+sudo cp $DIR/misc/example_cert.pem /usr/local/sstpmultipler/misc/example_cert.pem
+sudo cp $DIR/misc/example_key.pem /usr/local/sstpmultipler/misc/example_key.pem
 sudo chown root:root /usr/local/sstpmultipler -R
 sudo chmod 0744 /usr/local/sstpmultipler/SSTPMultiplexer.php
 
