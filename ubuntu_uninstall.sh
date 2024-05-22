@@ -7,8 +7,8 @@ sudo rm /usr/local/sstpmultipler/SSTPMultiplexer.php
 sudo rmdir /usr/local/sstpmultipler
 
 sudo rm /etc/sstpmultipler/config.ini
-sudo rm /etc/sstpmultipler/misc/example_cert.pem
-sudo rm /etc/sstpmultipler/misc/example_key.pem
+sudo rm /usr/local/sstpmultipler/misc/example_cert.pem
+sudo rm /usr/local/sstpmultipler/misc/example_key.pem
 sudo rmdir /usr/local/sstpmultipler/misc
 sudo rmdir /etc/sstpmultipler
 
