@@ -1,6 +1,6 @@
 # SSTP / HTTP Multiplexer
 
-![Intended use](schema.svg)
+![Intended use](misc/schema.svg)
 
 Tool to serve **HTTPS** and **SSTP** on same port and ip, for unix systems.  
 Simple one file php program, with ready-made install scripts for ubuntu.
