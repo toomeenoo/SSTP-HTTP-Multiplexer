@@ -5,6 +5,7 @@ class SSTPMultiplexer {
     private $listenSocket = null;
     private $isPrimaryProcess = true;
     private $config = null;
+    private $childProcesses = [];
 
     /**
      * Create and configure server
@@ -74,8 +75,10 @@ class SSTPMultiplexer {
                     if($this->fork()){
                         $this->logWrite("Connected: ".$peerName);
                         $this->handle($conn);
+                        exit;
                     }
                 }
+                $this->collectExited();
                 // Wait now, not to kill cpu
                 usleep(1000*$this->config->listen_loop_wait_ms);
             }
@@ -139,11 +142,17 @@ class SSTPMultiplexer {
                 // While connection is open ...
                 while($target && $connection){
                     // Count traffic bytes
-                    $v  = stream_copy_to_stream($target, $connection);
+                    $v  = stream_copy_to_stream($target, $connection) ?? 0;
                     $v += stream_copy_to_stream($connection, $target);
                     
                     // If there is no traffic, give cpu some rest 
-                    if(!$v) usleep(10000);
+                    if(!$v){
+                        if(stream_get_meta_data($target)['eof'] || stream_get_meta_data($connection)['eof']){
+                            echo "> exit child\n";
+                            break;
+                        }
+                        usleep(10000);
+                    }
                 }
 
                 //Close connection to target
@@ -174,10 +183,23 @@ class SSTPMultiplexer {
         if ($pid == -1) {
             die('Fork failure!');
         } else if ($pid) {
+            $this->childProcesses[$pid] = true;
             return false;
         } else {
             $this->isPrimaryProcess = false;
             return true;
+        }
+    }
+
+    /**
+     * Collect status of exited child processes
+     * so we do not let them hanging
+     */
+    private function collectExited(){
+        if(count($this->childProcesses)){
+            while (($pid = pcntl_wait($status, WNOHANG)) > 0) {
+                unset($this->childProcesses[$pid]);
+            }
         }
     }
 
@@ -214,7 +236,12 @@ class SSTPMultiplexer {
     {
         if($this->isPrimaryProcess){
             fclose($this->listenSocket);
-            pcntl_wait($status);
+            while(count($this->childProcesses)){
+                $pid = pcntl_wait($status);
+                if($pid >= 0){
+                    unset($this->childProcesses[$pid]);
+                }
+            }
         }
     }
 }
