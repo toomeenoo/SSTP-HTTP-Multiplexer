@@ -22,10 +22,11 @@ class SSTPMultiplexer {
             "sstp_target"      => '127.0.0.1:1443',
             "log_stdio"        => 0,
             // Performance tweaks:
-            'listen_socket_wait_s'  => 60,
-            'listen_loop_wait_ms'   =>  5,
+            'listen_socket_wait_s'  =>  2,
+            'listen_loop_wait_ms'   =>  1,
             'data_loop_wait_ms'     => 10,
-            'data_firstread_ms'     =>  1
+            'data_init_loop_ms'     =>  1,
+            'init_data_wait_s'      =>  5
         ], $config);
 
         set_time_limit(0);
@@ -115,7 +116,14 @@ class SSTPMultiplexer {
 
             // Load some data - we expect that next packet will contain at least http method
             $data = false;
-            while(!($data = stream_get_contents($connection))) usleep(1000*$this->config->data_firstread_ms);
+            $tmax = microtime(true) + $this->config->init_data_wait_s;
+            while(!($data = stream_get_contents($connection))){
+                if(microtime(true) > $tmax){
+                    @fclose($connection);
+                    return;
+                }
+                usleep(1000*$this->config->data_init_loop_ms);
+            }
 
             // Determine HTTP method from recieved data
             if(preg_match('/^([^ ]+)/', $data, $m)){
