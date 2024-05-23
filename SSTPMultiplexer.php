@@ -156,7 +156,6 @@ class SSTPMultiplexer {
                     // If there is no traffic, give cpu some rest 
                     if(!$v){
                         if(stream_get_meta_data($target)['eof'] || stream_get_meta_data($connection)['eof']){
-                            echo "> exit child\n";
                             break;
                         }
                         usleep(10000);
