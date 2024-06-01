@@ -132,10 +132,11 @@ class SSTPMultiplexer {
 
             // Detect if it's http or SSTP, and open connection as client to desired target
             if($httpMethod == 'SSTP_DUPLEX_POST'){
-                $this->logWrite("SSTP: $httpMethod ".stream_socket_get_name($connection, true));
+                $this->logWrite("SSTP: $httpMethod");
                 $target = stream_socket_client("tls://".$this->config->sstp_target, $ec, $em, 2, STREAM_CLIENT_CONNECT, self::unverifiedContext());
             }else{
-                $this->logWrite("HTTP: $httpMethod ".stream_socket_get_name($connection, true));
+                $this->logWrite("HTTP: $httpMethod");
+                $data = preg_replace("/\r\n/", "\r\nMultiplexer-Client: ".stream_socket_get_name($connection, true)."\r\n", $data, 1);
                 $target = stream_socket_client("tls://".$this->config->http_target, $ec, $em, 2, STREAM_CLIENT_CONNECT, self::unverifiedContext());
             }
 
@@ -253,8 +254,60 @@ class SSTPMultiplexer {
     }
 }
 
+function parseCommandline(){
+    $output = [];
+
+    if(php_sapi_name() != 'cli')
+        return $output;
+
+    global $argc, $argv;
+    $options = [
+        '--listen-ip-port',
+        '--ssl-cert',
+        '--ssl-pkey',
+        '--http-target',
+        '--sstp-target',
+        '--log-stdio',
+        '--listen-socket-wait-s',
+        '--listen-loop-wait-ms',
+        '--data-loop-wait-ms',
+        '--data-init-loop-ms',
+        '--init-data-wait-s',
+    ];
+
+    if(in_array('--help', $argv)){
+        echo "-- PHP Multiplexer 1.0 ----------------------\n";
+        echo "Available commandline options:\n";
+        echo "  ".join(" [config_value]\n  ", $options)." [config_value]\n";
+        die();
+    }
+
+    $c = 1;
+    while ($c < $argc) {
+        $opt = $argv[$c];
+        if(in_array($opt, $options)){
+            if(isset($argv[$c+1])){
+                $output[str_replace('-','_',substr($opt, 2))] = $argv[$c+1];
+                $c += 2;
+            }else{
+                echo "Missing value for option $opt!\n";
+                die();
+            }
+        }else{
+            echo "Unknown commandline option $opt!\n";
+            echo "Try --help\n";
+            die();
+        }
+    }
+
+    return $output;
+}
+
+
 $configFile = __DIR__.DIRECTORY_SEPARATOR.'config.ini';
 if(file_exists('/etc/sstpmultipler/config.ini'))
     $configFile = '/etc/sstpmultipler/config.ini';
 
-new SSTPMultiplexer(parse_ini_file($configFile, false) ?? []);
+$configData = array_merge(parse_ini_file($configFile, false) ?? [], parseCommandline());
+
+new SSTPMultiplexer($configData);

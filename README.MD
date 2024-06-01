@@ -80,7 +80,8 @@ Primary location for simple `config.ini` is in `/etc/sstpmultipler/config.ini`, 
   - SSTP Certificate authentication (only basic, name + passowrd)
 
 - Known quirks:
-  - Real IP address of requestor (client) is not forwarded to HTTP server.
+  - Real IP address of requestor (client) is forwarded only in first HTTP request after connection (as HTTP header `Multiplexer-Client`)  
+    - Current option is only to store this inside session on backend part 
   - Connections from Multiplexer to HTTP and SSTP servers are in "Unsecure" mode, no checking for valid certificate or valid certificate name are in place - intended to be in safe LAN environment with static addresses.
   - Only TCP communication supported, not intended for use with QUIC protocol
 
